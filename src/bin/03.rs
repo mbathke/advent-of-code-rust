@@ -1,27 +1,23 @@
-use std::ascii::AsciiExt;
-
 advent_of_code::solution!(3);
 
 pub fn part_one(input: &str) -> Option<i32> {
-    println!("{}", input);
-
     let chars_vec: Vec<char> = input.chars().collect();
 
-    let get_num = |pos: usize| -> i32 {
-        let result = for d in pos..chars_vec.len() {
-            let mut result = 0;
+    let get_num = |pos: &mut usize| -> Option<i32> {
+        let mut x = 0;
+        let mut found = false;
 
-            let digit = match chars_vec[pos].is_digit(10) {
-                Some(x) => x as i32,
-                None => -1
-            };
+        while chars_vec[*pos].is_digit(10) {
+            x = x * 10 + chars_vec[*pos].to_digit(10).unwrap();
+            *pos += 1;
+            found = true;
+        }
 
-            if digit == -1 { return - 1 }
-
-            result = result * 10 + digit
-        };
-
-        result
+        if found {
+            Some(x.try_into().unwrap())
+        } else {
+            None
+        }
     };
 
     let mut answer = 0;
@@ -30,16 +26,14 @@ pub fn part_one(input: &str) -> Option<i32> {
         if *c == 'm' {
             if chars_vec[i + 1] == 'u' && chars_vec[i + 2] == 'l' && chars_vec[i + 3] == '(' {
                 i += 4;
-                let a = get_num(i);
+                let a = get_num(&mut i);
 
-                if chars_vec[i + 1] == ',' {
-                    i += 2;
-                    let b = get_num(i);
+                if chars_vec[i] == ',' {
+                    i += 1;
+                    let b = get_num(&mut i);
 
-                    println!("a {}, b {}", a, b);
-
-                    if a != -1 && b != -1 && chars_vec[i + 1] == ')' {
-                        answer += a * b;
+                    if a != None && b != None && chars_vec[i] == ')' {
+                        answer += a.unwrap() * b.unwrap();
                     }
                 }
             }
@@ -49,8 +43,57 @@ pub fn part_one(input: &str) -> Option<i32> {
     Some(answer)
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<i32> {
+    let chars_vec: Vec<char> = input.chars().collect();
+
+    let get_num = |pos: &mut usize| -> Option<i32> {
+        let mut x = 0;
+        let mut found = false;
+
+        while chars_vec[*pos].is_digit(10) {
+            x = x * 10 + chars_vec[*pos].to_digit(10).unwrap();
+            *pos += 1;
+            found = true;
+        }
+
+        if found {
+            Some(x.try_into().unwrap())
+        } else {
+            None
+        }
+    };
+
+    let mut answer = 0;
+    let mut multiply = true;
+    let chars_length = chars_vec.len();
+
+    for (mut i, c) in chars_vec.iter().enumerate() {
+        if i + 4 <= chars_length && input[i..i + 4].to_string() == "do()" {
+            multiply = true;
+        }
+
+        if i + 7 <= chars_length && input[i..i + 7].to_string() == "don\'t()" {
+            multiply = false;
+        }
+
+        if *c == 'm' && multiply {
+            if chars_vec[i + 1] == 'u' && chars_vec[i + 2] == 'l' && chars_vec[i + 3] == '(' {
+                i += 4;
+                let a = get_num(&mut i);
+
+                if chars_vec[i] == ',' {
+                    i += 1;
+                    let b = get_num(&mut i);
+
+                    if a != None && b != None && chars_vec[i] == ')' {
+                        answer += a.unwrap() * b.unwrap();
+                    }
+                }
+            }
+        }
+    }
+
+    Some(answer)
 }
 
 #[cfg(test)]
@@ -67,6 +110,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(161));
     }
 }
