@@ -3,14 +3,21 @@ advent_of_code::solution!(4);
 const SEARCH_WORD_LEN: usize = 4;
 
 pub fn check_for_xmas(x: usize, y: usize, matrix: &Vec<Vec<char>>) -> bool {
-    match matrix[y][x] == 'X'
+    if matrix[y][x] == 'X'
         && matrix[y][x + 1] == 'M'
         && matrix[y][x + 2] == 'A'
         && matrix[y][x + 3] == 'S'
     {
-        true => true,
-        false => false,
+        return true;
+    } else if matrix[y][x] == 'X'
+        && matrix[y + 1][x] == 'M'
+        && matrix[y + 2][x] == 'A'
+        && matrix[y + 3][x] == 'S'
+    {
+        return true;
     }
+
+    false
 }
 
 pub fn part_one(input: &str) -> Option<i32> {
@@ -29,15 +36,7 @@ pub fn part_one(input: &str) -> Option<i32> {
     for mut y in 0..matrix.len() {
         for mut x in 0..matrix[y].len() {
             if matrix[y][x] == 'X' {
-                let ly = matrix[y].len();
-                match ly {
-                    ly x + SEARCH_WORD_LEN => found_xmas += if check_for_xmas(x, y, &matrix) { 1 } else { 0 },
-                }
-
-
-                if x + SEARCH_WORD_LEN < matrix[y].len()
-                    && check_for_xmas(x, y, &matrix)
-                {
+                if x + SEARCH_WORD_LEN < matrix[y].len() && check_for_xmas(x, y, &matrix) {
                     found_xmas += 1;
                     x += SEARCH_WORD_LEN;
                 }
