@@ -1,27 +1,10 @@
+use std::usize;
+
 advent_of_code::solution!(4);
-
-const SEARCH_WORD_LEN: usize = 4;
-
-pub fn check_for_xmas(x: usize, y: usize, matrix: &Vec<Vec<char>>) -> bool {
-    if matrix[y][x] == 'X'
-        && matrix[y][x + 1] == 'M'
-        && matrix[y][x + 2] == 'A'
-        && matrix[y][x + 3] == 'S'
-    {
-        return true;
-    } else if matrix[y][x] == 'X'
-        && matrix[y + 1][x] == 'M'
-        && matrix[y + 2][x] == 'A'
-        && matrix[y + 3][x] == 'S'
-    {
-        return true;
-    }
-
-    false
-}
 
 pub fn part_one(input: &str) -> Option<i32> {
     let mut matrix: Vec<Vec<char>> = Vec::new();
+    let search_term: Vec<char> = vec!['X', 'M', 'A', 'S'];
 
     println!("[");
     for line in input.lines() {
@@ -33,12 +16,34 @@ pub fn part_one(input: &str) -> Option<i32> {
 
     let mut found_xmas = 0;
 
-    for mut y in 0..matrix.len() {
-        for mut x in 0..matrix[y].len() {
+    for y in 0..matrix.len() {
+        for x in 0..matrix[y].len() {
             if matrix[y][x] == 'X' {
-                if x + SEARCH_WORD_LEN < matrix[y].len() && check_for_xmas(x, y, &matrix) {
-                    found_xmas += 1;
-                    x += SEARCH_WORD_LEN;
+                for dy in -1..=1 as i32 {
+                    for dx in -1..=1 as i32 {
+                        if dy == 0 && dx == 0 {
+                            continue;
+                        }
+                        let mut all_ok = true;
+                        for (i, &val) in search_term.iter().enumerate() {
+                            let row = y as i32 + dy * i as i32;
+                            let col = x as i32 + dx * i as i32;
+
+                            if 0 > row
+                                || (row as usize) >= matrix.len()
+                                || 0 > col
+                                || (col as usize) >= matrix[y].len()
+                                || matrix[row as usize][col as usize] != val
+                            {
+                                all_ok = false;
+                                break;
+                            }
+                        }
+
+                        if all_ok {
+                            found_xmas += 1
+                        }
+                    }
                 }
             }
         }
