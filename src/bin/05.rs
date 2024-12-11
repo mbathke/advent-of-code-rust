@@ -79,65 +79,74 @@ pub fn part_two(input: &str) -> Option<i32> {
     let mut answer = 0;
     for pages in manual.iter() {
         let mut sorted_pages = pages.clone();
-        let mut is_sorted = true;
+        let mut is_sorted: bool;
+        let mut was_sorted_before = true;
 
-        for rule in rules.iter() {
-            let left = rule.0;
-            let right = rule.1;
+        loop {
+            is_sorted = true;
+            for rule in rules.iter() {
+                let left = rule.0;
+                let right = rule.1;
 
-            let left_pos = match sorted_pages.iter().position(|&p| p == left) {
-                Some(pos) => pos,
-                None => continue,
-            };
+                let left_pos = match sorted_pages.iter().position(|&p| p == left) {
+                    Some(pos) => pos,
+                    None => continue,
+                };
 
-            let right_pos = match sorted_pages.iter().position(|&p| p == right) {
-                Some(pos) => pos,
-                None => continue,
-            };
+                let right_pos = match sorted_pages.iter().position(|&p| p == right) {
+                    Some(pos) => pos,
+                    None => continue,
+                };
 
-            if left_pos > right_pos {
-                is_sorted = false;
-                sorted_pages.swap(left_pos, right_pos);
-                break;
+                if left_pos > right_pos {
+                    is_sorted = false;
+                    was_sorted_before = false;
+                    sorted_pages.swap(left_pos, right_pos);
+                    break;
+                }
+
+                // 47|53 -
+                // 97|13 *
+                // 97|61 -
+                // 97|47 *
+                // 75|29 *
+                // 61|13 -
+                // 75|53 -
+                // 29|13 ><
+                // 97|29 *
+                // 53|29 -
+                // 61|53 -
+                // 97|53 -
+                // 61|29 -
+                // 47|13 ><
+                // 75|47 * ><
+                // 97|75 *
+                // 47|61 -
+                // 75|61 -
+                // 47|29 >< *
+                // 75|13 *
+                // 53|13 -
+                //
+                // 97,13,75,29,47
+                // 97,29,75,13,47
+                // 97,29,75,47,13
+                // 97,47,75,29,13
+                // run 2
+                // 97,75,47,29,13
             }
 
-            // 47|53 -
-            // 97|13 *
-            // 97|61 -
-            // 97|47 *
-            // 75|29 *
-            // 61|13 -
-            // 75|53 -
-            // 29|13 ><
-            // 97|29 *
-            // 53|29 -
-            // 61|53 -
-            // 97|53 -
-            // 61|29 -
-            // 47|13 ><
-            // 75|47 * ><
-            // 97|75 *
-            // 47|61 -
-            // 75|61 -
-            // 47|29 >< *
-            // 75|13 *
-            // 53|13 -
-            //
-            // 97,13,75,29,47
-            // 97,29,75,13,47
-            // 97,29,75,47,13
-            // 97,47,75,29,13
-            // run 2
-            // 97,75,47,29,13
+            if is_sorted {
+                break;
+            }
         }
         // if every rule has run i need to check the rules again recursively until the pages are
         // sorted.
 
-        if !is_sorted {
-            println!("Newly sorted pages: {:?}", sorted_pages);
+        if is_sorted && !was_sorted_before {
+            // println!("Newly sorted pages: {:?}", sorted_pages);
             let middle_index = ((sorted_pages.len() / 2) as f32).floor() as i32;
             let middle_value = sorted_pages.get(middle_index as usize).unwrap();
-            println!("Middle value: {}", middle_value);
+            // println!("Middle value: {}", middle_value);
 
             answer += middle_value;
         }
