@@ -6,13 +6,10 @@ pub fn part_one(input: &str) -> Option<i32> {
     let mut matrix: Vec<Vec<char>> = Vec::new();
     let search_term: Vec<char> = vec!['X', 'M', 'A', 'S'];
 
-    // println!("[");
     for line in input.lines() {
         let line_chars = line.chars().collect();
-        // println!("{:?}", line_chars);
         matrix.push(line_chars);
     }
-    // println!("]");
 
     let mut found_xmas = 0;
 
@@ -54,53 +51,33 @@ pub fn part_one(input: &str) -> Option<i32> {
 
 pub fn part_two(input: &str) -> Option<u32> {
     let mut matrix: Vec<Vec<char>> = Vec::new();
-    let search_term: Vec<char> = vec!['M', 'A', 'S'];
+    let directions: Vec<(i32,i32)> = vec![(-1, -1), (-1, 1), (1, 1), (1, -1)];
 
-    // println!("[");
     for line in input.lines() {
         let line_chars = line.chars().collect();
-        // println!("{:?}", line_chars);
         matrix.push(line_chars);
     }
-    // println!("]");
 
-    let mut found_xmas = 0;
+    let mut found_mas = 0;
+    for y in 1..matrix.len() - 1 {
+        for x in 1..matrix[y].len() - 1 {
+            if matrix[y][x] == 'A' {
+                let mut s = String::new();
 
-    for y in 0..matrix.len() {
-        for x in 0..matrix[y].len() {
-            if matrix[y][x] == 'M' {
-                for dy in -1..=1 as i32 {
-                    for dx in -1..=1 as i32 {
-                        if dy == 0 || dx == 0 {
-                            continue;
-                        }
+                for dir in directions.iter() {
+                    let dy = y as i32 + dir.0;
+                    let dx = x as i32 + dir.1;
+                    s.push(matrix[dy as usize][dx as usize]);
+                }
 
-                        let mut keyword_matches = true;
-                        for (i, &val) in search_term.iter().enumerate() {
-                            let row = y as i32 + dy * i as i32;
-                            let col = x as i32 + dx * i as i32;
-
-                            if 0 > row
-                                || (row as usize) >= matrix.len()
-                                || 0 > col
-                                || (col as usize) >= matrix[y].len()
-                                || matrix[row as usize][col as usize] != val
-                            {
-                                keyword_matches = false;
-                                break;
-                            }
-                        }
-
-                        if keyword_matches {
-                            found_xmas += 1
-                        }
-                    }
+                if s == "MMSS" || s == "MSSM" || s == "SSMM" || s == "SMMS" {
+                    found_mas += 1;
                 }
             }
         }
     }
 
-    Some(found_xmas)
+    Some(found_mas)
 }
 
 #[cfg(test)]
