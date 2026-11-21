@@ -1,14 +1,20 @@
 advent_of_code::solution!(1);
 
 fn find_factor(num: i32, numbers: &Vec<i32>) -> i32 {
-    numbers.iter().filter(|&n| *n == num).collect::<Vec<_>>().len() as i32
+    numbers
+        .iter()
+        .filter(|&n| *n == num)
+        .collect::<Vec<_>>()
+        .len() as i32
 }
 
 pub fn part_one(input: &str) -> Option<i32> {
     if input.len() == 0 {
         println!("Input is empty");
-        return None
+        return None;
     }
+
+    dbg!("{:?}", input);
 
     // split the input into lines
     let lines: Vec<&str> = input.split('\n').collect();
@@ -41,7 +47,7 @@ pub fn part_one(input: &str) -> Option<i32> {
 pub fn part_two(input: &str) -> Option<i32> {
     if input.len() == 0 {
         println!("Input is empty");
-        return None
+        return None;
     }
 
     // split the input into lines
